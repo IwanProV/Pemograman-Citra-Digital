@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.dom.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.js"></script>
+</head>
+<body>
+  <script>
+    let sunTexture, mercuryTexture, venusTexture, earthTexture, marsTexture, jupiterTexture, saturnTexture, uranusTexture, neptuneTexture, ringTexture;
+    let stars = [];
+
+    function preload() {
+      sunTexture = loadImage('preview_sun.jpg');
+      mercuryTexture = loadImage('8k_mercury.jpg');
+      venusTexture = loadImage('2k_venus_surface.jpg');
+      earthTexture = loadImage('2k_earth_daymap.jpg');
+      marsTexture = loadImage('2k_mars.jpg');
+      jupiterTexture = loadImage('2k_jupiter.jpg');
+      saturnTexture = loadImage('2k_saturn.jpg');
+      uranusTexture = loadImage('2k_uranus.jpg');
+      neptuneTexture = loadImage('2k_neptune.jpg');
+      ringTexture = loadImage('2k_saturn_ring_alpha.png'); // Tambahkan tekstur cincin
+    }
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      for (let i = 0; i < 2000; i++) {  // Menambah jumlah bintang
+        stars.push([random(-width * 2, width * 2), random(-height * 2, height * 2), random(-1000, 1000)]);
+      }
+    }
+
+    function draw() {
+      background(0);
+      drawStars();
+
+      // Kontrol kamera
+      orbitControl();
+
+      noStroke();
+      lights();
+
+      // Matahari
+      push();
+      rotateY(frameCount * 0.9);  // Menambahkan rotasi pada Matahari
+      texture(sunTexture);
+      sphere(100);
+      pop();
+
+      // Planet
+      let planets = [
+        { texture: mercuryTexture, distance: 150, size: 20, speed: 0.14 },
+        { texture: venusTexture, distance: 200, size: 25, speed: 0.13 },
+        { texture: earthTexture, distance: 250, size: 30, speed: 0.10 },
+        { texture: marsTexture, distance: 300, size: 28, speed: 0.18 },
+        { texture: jupiterTexture, distance: 400, size: 50, speed: 0.12 },
+        { texture: saturnTexture, distance: 500, size: 45, speed: 0.1 },
+        { texture: uranusTexture, distance: 600, size: 35, speed: 0.18 },
+        { texture: neptuneTexture, distance: 700, size: 34, speed: 0.16 }
+      ];
+
+      for (let i = 0; i < planets.length; i++) {
+        push();
+        let angle = frameCount * planets[i].speed;
+        let x = cos(angle) * planets[i].distance;
+        let z = sin(angle) * planets[i].distance;
+        translate(x, 0, z);
+        texture(planets[i].texture);
+        sphere(planets[i].size);
+
+        // Tambahkan cincin pada Saturnus
+        if (i == 5) {
+          push();
+          rotateX(HALF_PI);
+          rotateZ(frameCount * 0.2);  // Menambahkan rotasi pada cincin
+          texture(ringTexture);
+					torus(planets[i].size * 1.5, planets[i].size * 0.1);  // Lebarkan cincin dan buat lebih tipis
+          //plane(planets[i].size * 3, planets[i].size * 3);  // Lebarkan cincin
+          pop();
+        }
+
+        pop();
+      }
+    }
+
+    function drawStars() {
+      push();
+      noStroke();
+      for (let i = 0; i < stars.length; i++) {
+        push();
+        translate(stars[i][0], stars[i][1], stars[i][2]);
+        fill(255);
+        sphere(2);
+        pop();
+      }
+      pop();
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+</body>
+</html>
